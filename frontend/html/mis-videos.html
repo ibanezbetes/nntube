@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Videos - NTTube</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/mis-videos.css">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Cabecera -->
+    <header>
+        <div class="logo-container">
+            <a href="../index.html" class="logo">NT<span>Tube</span></a>
+        </div>
+        <div class="user-container">
+            <div class="user-dropdown">
+                <button class="dropdown-btn" id="user-name">Usuario</button>
+                <div class="dropdown-content">
+                    <a href="dashboard.html"><i class="fas fa-user"></i> Mi cuenta</a>
+                    <a href="subir-video.html"><i class="fas fa-upload"></i> Subir video</a>
+                    <a href="#" id="btn-logout"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Barra lateral de categorías -->
+    <aside class="sidebar">
+        <nav>
+            <ul id="categorias-lista">
+                <li class="categoria-item">
+                    <a href="../index.html"><i class="fas fa-home"></i> Inicio</a>
+                </li>
+                <li class="categoria-item">
+                    <a href="dashboard.html"><i class="fas fa-user"></i> Mi cuenta</a>
+                </li>
+                <li class="categoria-item active">
+                    <a href="mis-videos.html"><i class="fas fa-video"></i> Mis videos</a>
+                </li>
+                <li class="categoria-item">
+                    <a href="subir-video.html"><i class="fas fa-upload"></i> Subir video</a>
+                </li>
+                <li class="separator"></li>
+                <!-- Las categorías se cargarán dinámicamente desde JS -->
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Contenido principal -->
+    <main>
+        <section class="page-header">
+            <h1>Mis Videos</h1>
+            <p>Gestiona los videos que has subido</p>
+            
+            <div class="header-actions">
+                <a href="subir-video.html" class="btn-upload">
+                    <i class="fas fa-plus"></i> Subir nuevo video
+                </a>
+            </div>
+        </section>
+
+        <section class="videos-section">
+            <div class="loading-spinner" id="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Cargando tus videos...</p>
+            </div>
+            
+            <div id="videos-container" class="videos-container">
+                <!-- Aquí se cargarán los videos del usuario -->
+            </div>
+            
+            <div id="no-videos" class="no-videos" style="display: none;">
+                <div class="no-content-message">
+                    <i class="fas fa-video-slash"></i>
+                    <h2>Aún no has subido ningún video</h2>
+                    <p>Comparte tu primer video con la comunidad de NTTube</p>
+                    <a href="subir-video.html" class="btn-primary">Subir mi primer video</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal para editar video -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Video</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="edit-form">
+                    <input type="hidden" id="edit-id-video">
+                    
+                    <div class="form-group">
+                        <label for="edit-titulo">Título del video <span class="required">*</span></label>
+                        <input type="text" id="edit-titulo" name="titulo" required maxlength="100">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-descripcion">Descripción</label>
+                        <textarea id="edit-descripcion" name="descripcion" rows="4" maxlength="500"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-url-video">URL del video (YouTube) <span class="required">*</span></label>
+                        <input type="url" id="edit-url-video" name="url_video" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-id-genero">Género <span class="required">*</span></label>
+                        <select id="edit-id-genero" name="id_genero" required>
+                            <option value="">Selecciona un género</option>
+                            <!-- Los géneros se cargarán dinámicamente desde JS -->
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary close-modal">Cancelar</button>
+                        <button type="submit" class="btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación para eliminar -->
+    <div id="delete-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Eliminar Video</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar el video "<span id="delete-video-title"></span>"?</p>
+                <p class="warning-message">Esta acción no se puede deshacer.</p>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary close-modal">Cancelar</button>
+                    <button type="button" id="confirm-delete" class="btn-danger">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie de página -->
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 NTTube - Todos los derechos reservados</p>
+            <div class="footer-links">
+                <a href="#">Acerca de</a>
+                <a href="#">Términos de servicio</a>
+                <a href="#">Política de privacidad</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../js/config.js"></script>
+    <script src="../js/mis-videos.js"></script>
+    <script>
+        // Script para manejar el dropdown
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownBtn = document.querySelector('.dropdown-btn');
+            const dropdownContent = document.querySelector('.dropdown-content');
+            
+            if (dropdownBtn && dropdownContent) {
+                // Alternar la visibilidad al hacer clic
+                dropdownBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdownContent.classList.toggle('show-dropdown');
+                });
+                
+                // Cerrar el dropdown al hacer clic en cualquier otro lugar
+                document.addEventListener('click', function(e) {
+                    if (!e.target.matches('.dropdown-btn') && !dropdownContent.contains(e.target)) {
+                        dropdownContent.classList.remove('show-dropdown');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

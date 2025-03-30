@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi cuenta - NTTube</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Cabecera -->
+    <header>
+        <div class="logo-container">
+            <a href="../index.html" class="logo">NT<span>Tube</span></a>
+        </div>
+        <div class="user-container">
+            <div class="user-dropdown">
+                <button class="dropdown-btn" id="user-name">Usuario</button>
+                <div class="dropdown-content">
+                    <a href="dashboard.html"><i class="fas fa-user"></i> Mi cuenta</a>
+                    <a href="subir-video.html"><i class="fas fa-upload"></i> Subir video</a>
+                    <a href="#" id="btn-logout"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Barra lateral de categorías -->
+    <aside class="sidebar">
+        <nav>
+            <ul id="categorias-lista">
+                <li class="categoria-item">
+                    <a href="../index.html"><i class="fas fa-home"></i> Inicio</a>
+                </li>
+                <li class="categoria-item active">
+                    <a href="dashboard.html"><i class="fas fa-user"></i> Mi cuenta</a>
+                </li>
+                <li class="categoria-item">
+                    <a href="mis-videos.html"><i class="fas fa-video"></i> Mis videos</a>
+                </li>
+                <li class="categoria-item">
+                    <a href="subir-video.html"><i class="fas fa-upload"></i> Subir video</a>
+                </li>
+                <li class="separator"></li>
+                <!-- Las categorías se cargarán dinámicamente desde JS -->
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Contenido principal -->
+    <main>
+        <section class="dashboard-header">
+            <h1>Bienvenido, <span id="nombre-usuario">Usuario</span></h1>
+            <p>Esta es tu página de inicio en NTTube</p>
+        </section>
+
+        <section class="dashboard-stats">
+            <div class="stat-card">
+                <i class="fas fa-video"></i>
+                <div class="stat-info">
+                    <h3>Mis videos</h3>
+                    <p id="count-videos">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-users"></i>
+                <div class="stat-info">
+                    <h3>Suscriptores</h3>
+                    <p id="count-suscriptores">0</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="dashboard-actions">
+            <h2>Acciones rápidas</h2>
+            <div class="action-buttons">
+                <a href="subir-video.html" class="action-btn">
+                    <i class="fas fa-upload"></i>
+                    <span>Subir nuevo video</span>
+                </a>
+                <a href="mis-videos.html" class="action-btn">
+                    <i class="fas fa-edit"></i>
+                    <span>Gestionar mis videos</span>
+                </a>
+            </div>
+        </section>
+
+        <section class="recent-videos">
+            <h2>Mis videos recientes</h2>
+            <div id="user-videos-grid">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Cargando videos...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Pie de página -->
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 NTTube - Todos los derechos reservados</p>
+            <div class="footer-links">
+                <a href="#">Acerca de</a>
+                <a href="#">Términos de servicio</a>
+                <a href="#">Política de privacidad</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../js/config.js"></script>
+    <script src="../js/dashboard.js"></script>
+    <script>
+        // Script para manejar el dropdown
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownBtn = document.querySelector('.dropdown-btn');
+            const dropdownContent = document.querySelector('.dropdown-content');
+            
+            if (dropdownBtn && dropdownContent) {
+                // Alternar la visibilidad al hacer clic
+                dropdownBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdownContent.classList.toggle('show-dropdown');
+                });
+                
+                // Cerrar el dropdown al hacer clic en cualquier otro lugar
+                document.addEventListener('click', function(e) {
+                    if (!e.target.matches('.dropdown-btn') && !dropdownContent.contains(e.target)) {
+                        dropdownContent.classList.remove('show-dropdown');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

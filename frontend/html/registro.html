@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - NTTube</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/auth.css">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-header">
+            <a href="../index.html" class="logo">NT<span>Tube</span></a>
+            <h1>Crear una cuenta</h1>
+        </div>
+
+        <form id="registro-form" class="auth-form">
+            <div class="form-group">
+                <label for="nombre_usuario"><i class="fas fa-user"></i> Nombre de usuario</label>
+                <input type="text" id="nombre_usuario" name="nombre_usuario" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email"><i class="fas fa-envelope"></i> Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="contrasenia"><i class="fas fa-lock"></i> Contraseña</label>
+                <input type="password" id="contrasenia" name="contrasenia" required>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmar_contrasenia"><i class="fas fa-lock"></i> Confirmar Contraseña</label>
+                <input type="password" id="confirmar_contrasenia" name="confirmar_contrasenia" required>
+            </div>
+
+            <button type="submit" class="btn-primary">Registrarse</button>
+            
+            <div class="form-footer">
+                <p>¿Ya tienes cuenta? <a href="login.html">Inicia Sesión</a></p>
+            </div>
+        </form>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 NTTube - Todos los derechos reservados</p>
+            <div class="footer-links">
+                <a href="#">Acerca de</a>
+                <a href="#">Términos de servicio</a>
+                <a href="#">Política de privacidad</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../js/config.js"></script>
+    <script src="../js/registro.js"></script>
+</body>
+</html>

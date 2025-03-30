@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subir Video - NTTube</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/subir-video.css">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Cabecera -->
+    <header>
+        <div class="logo-container">
+            <a href="../index.html" class="logo">NT<span>Tube</span></a>
+        </div>
+        <div class="user-container">
+            <div class="user-dropdown">
+                <button class="dropdown-btn" id="user-name">Usuario</button>
+                <div class="dropdown-content">
+                    <a href="dashboard.html"><i class="fas fa-user"></i> Mi cuenta</a>
+                    <a href="subir-video.html"><i class="fas fa-upload"></i> Subir video</a>
+                    <a href="#" id="btn-logout"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Barra lateral de categorías -->
+    <aside class="sidebar">
+        <nav>
+            <ul id="categorias-lista">
+                <li class="categoria-item">
+                    <a href="../index.html"><i class="fas fa-home"></i> Inicio</a>
+                </li>
+                <li class="categoria-item">
+                    <a href="dashboard.html"><i class="fas fa-user"></i> Mi cuenta</a>
+                </li>
+                <li class="categoria-item">
+                    <a href="mis-videos.html"><i class="fas fa-video"></i> Mis videos</a>
+                </li>
+                <li class="categoria-item active">
+                    <a href="subir-video.html"><i class="fas fa-upload"></i> Subir video</a>
+                </li>
+                <li class="separator"></li>
+                <!-- Las categorías se cargarán dinámicamente desde JS -->
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Contenido principal -->
+    <main>
+        <section class="page-header">
+            <h1>Subir nuevo video</h1>
+            <p>Comparte tu contenido con la comunidad</p>
+        </section>
+
+        <section class="upload-section">
+            <form id="upload-form" class="upload-form">
+                <div class="form-group">
+                    <label for="titulo">Título del video <span class="required">*</span></label>
+                    <input type="text" id="titulo" name="titulo" required maxlength="100">
+                    <small>Máximo 100 caracteres</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcion">Descripción</label>
+                    <textarea id="descripcion" name="descripcion" rows="4" maxlength="500"></textarea>
+                    <small>Máximo 500 caracteres</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="url_video">URL del video (YouTube) <span class="required">*</span></label>
+                    <input type="url" id="url_video" name="url_video" required placeholder="https://www.youtube.com/watch?v=...">
+                    <small>Debe ser una URL válida de YouTube</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_genero">Género <span class="required">*</span></label>
+                    <select id="id_genero" name="id_genero" required>
+                        <option value="">Selecciona un género</option>
+                        <!-- Los géneros se cargarán dinámicamente desde JS -->
+                    </select>
+                </div>
+
+                <div class="video-preview" id="video-preview">
+                    <div class="preview-placeholder">
+                        <i class="fas fa-video"></i>
+                        <p>La miniatura del video se mostrará aquí</p>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" id="btn-cancel" class="btn-secondary">Cancelar</button>
+                    <button type="submit" id="btn-submit" class="btn-primary">Subir Video</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <!-- Pie de página -->
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 NTTube - Todos los derechos reservados</p>
+            <div class="footer-links">
+                <a href="#">Acerca de</a>
+                <a href="#">Términos de servicio</a>
+                <a href="#">Política de privacidad</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../js/config.js"></script>
+    <script src="../js/subir-video.js"></script>
+    <script>
+        // Script para manejar el dropdown
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownBtn = document.querySelector('.dropdown-btn');
+            const dropdownContent = document.querySelector('.dropdown-content');
+            
+            if (dropdownBtn && dropdownContent) {
+                // Alternar la visibilidad al hacer clic
+                dropdownBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdownContent.classList.toggle('show-dropdown');
+                });
+                
+                // Cerrar el dropdown al hacer clic en cualquier otro lugar
+                document.addEventListener('click', function(e) {
+                    if (!e.target.matches('.dropdown-btn') && !dropdownContent.contains(e.target)) {
+                        dropdownContent.classList.remove('show-dropdown');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reproductor de video - NTTube</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/video.css">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Cabecera -->
+    <header>
+        <div class="logo-container">
+            <a href="../index.html" class="logo">NT<span>Tube</span></a>
+        </div>
+        <div class="user-container" id="auth-buttons">
+            <a href="login.html" class="btn-login">Iniciar Sesión</a>
+            <a href="registro.html" class="btn-register">Registrarse</a>
+        </div>
+        <div class="user-container" id="user-menu" style="display: none;">
+            <div class="user-dropdown">
+                <button class="dropdown-btn" id="user-name">Usuario</button>
+                <div class="dropdown-content">
+                    <a href="dashboard.html"><i class="fas fa-user"></i> Mi cuenta</a>
+                    <a href="subir-video.html"><i class="fas fa-upload"></i> Subir video</a>
+                    <a href="#" id="btn-logout"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="video-page">
+        <div class="video-container">
+            <div id="player-container">
+                <!-- El reproductor de YouTube se cargará aquí -->
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Cargando video...</p>
+                </div>
+            </div>
+
+            <div class="video-info-container">
+                <h1 id="video-title">Cargando título...</h1>
+                
+                <div class="video-meta">
+                    <div class="video-stats">
+                        <span id="video-date">Fecha de subida</span>
+                        <span id="video-genre">Categoría</span>
+                        <span id="video-views">0 visualizaciones</span>
+                    </div>
+                    
+                    <div class="video-actions">
+                        <button id="btn-like" class="action-btn">
+                            <i class="far fa-thumbs-up"></i> <span id="like-count">0</span>
+                        </button>
+                        <button id="btn-dislike" class="action-btn">
+                            <i class="far fa-thumbs-down"></i> <span id="dislike-count">0</span>
+                        </button>
+                        <button id="btn-share" class="action-btn">
+                            <i class="fas fa-share"></i> Compartir
+                        </button>
+                    </div>
+                </div>
+
+                <div class="video-channel">
+                    <div class="channel-info">
+                        <div class="channel-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="channel-details">
+                            <h3 id="uploader-name">Nombre del usuario</h3>
+                            <p id="subscriber-count">0 suscriptores</p>
+                        </div>
+                    </div>
+                    <button id="btn-subscribe" class="subscribe-btn">Suscribirse</button>
+                </div>
+
+                <div class="video-description">
+                    <p id="video-description-text">Cargando descripción...</p>
+                </div>
+
+                <div class="video-rating">
+                    <h3>Valoración</h3>
+                    <div class="rating-stats">
+                        <div class="rating-average">
+                            <span id="rating-average">0</span>/5
+                            <span id="rating-count">(0 valoraciones)</span>
+                        </div>
+                    </div>
+                    <div class="rating-form">
+                        <select id="rating-select">
+                            <option value="">Seleccionar</option>
+                            <option value="1">1 - Muy malo</option>
+                            <option value="2">2 - Malo</option>
+                            <option value="3">3 - Regular</option>
+                            <option value="4">4 - Bueno</option>
+                            <option value="5">5 - Excelente</option>
+                        </select>
+                        <button id="rating-submit" class="btn-primary">Valorar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="comments-container">
+            <h2>Comentarios</h2>
+            
+            <div id="comment-form-container">
+                <form id="comment-form">
+                    <textarea id="comment-text" placeholder="Añade un comentario..." rows="3"></textarea>
+                    <div class="comment-actions">
+                        <button type="button" id="btn-cancel-comment">Cancelar</button>
+                        <button type="submit" id="btn-submit-comment">Comentar</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div id="comments-list">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Cargando comentarios...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="related-videos">
+        <h2>Videos recomendados</h2>
+        <div id="related-videos-container">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Cargando videos...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie de página -->
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 NTTube - Todos los derechos reservados</p>
+            <div class="footer-links">
+                <a href="#">Acerca de</a>
+                <a href="#">Términos de servicio</a>
+                <a href="#">Política de privacidad</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast container for notifications -->
+    <div id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="../js/config.js"></script>
+    <script src="../js/video.js"></script>
+    <script>
+        // Script para manejar el dropdown
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownBtn = document.querySelector('.dropdown-btn');
+            const dropdownContent = document.querySelector('.dropdown-content');
+            
+            if (dropdownBtn && dropdownContent) {
+                // Alternar la visibilidad al hacer clic
+                dropdownBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdownContent.classList.toggle('show-dropdown');
+                });
+                
+                // Cerrar el dropdown al hacer clic en cualquier otro lugar
+                document.addEventListener('click', function(e) {
+                    if (!e.target.matches('.dropdown-btn') && !dropdownContent.contains(e.target)) {
+                        dropdownContent.classList.remove('show-dropdown');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

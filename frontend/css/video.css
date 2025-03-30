@@ -1,0 +1,617 @@
+/* Estilos para la página de video */
+
+/* Dropdown para el usuario */
+.user-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-btn {
+    padding: 0.5rem 1rem;
+    background-color: #065fd4;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    min-width: 200px;
+    background-color: white;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    z-index: 1000;
+    margin-top: 5px;
+}
+
+.dropdown-content a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    color: #333;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.dropdown-content a:hover {
+    background-color: #f2f2f2;
+}
+
+.dropdown-btn:focus + .dropdown-content,
+.dropdown-content:hover {
+    display: block;
+}
+
+.user-dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Estilos básicos para el toast */
+#toast-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 9999;
+}
+
+.toast-message {
+    background-color: #323232;
+    color: #fff;
+    padding: 0.8rem 1rem;
+    margin-top: 10px;
+    border-radius: 4px;
+    opacity: 0.95;
+    font-size: 14px;
+    animation: fade-in-out 3s forwards;
+}
+
+@keyframes fade-in-out {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    10% {
+        opacity: 0.95;
+        transform: translateY(0);
+    }
+    90% {
+        opacity: 0.95;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    10% {
+        opacity: 0.95;
+        transform: translateY(0);
+    }
+    90% {
+        opacity: 0.95;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+}
+
+
+/* Layout general */
+body {
+    display: block;
+    background-color: #f9f9f9;
+}
+
+main.video-page {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Contenedor del reproductor */
+.video-container {
+    margin-bottom: 20px;
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+#player-container {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* Aspect ratio 16:9 */
+    background-color: #000;
+}
+
+#player-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: #666;
+}
+
+.loading-spinner i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+/* Información del video */
+.video-info-container {
+    padding: 20px;
+}
+
+#video-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.video-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.video-stats {
+    display: flex;
+    gap: 15px;
+    color: #606060;
+    font-size: 0.9rem;
+}
+
+.video-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 12px;
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    color: #606060;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.action-btn:hover {
+    background-color: #e6e6e6;
+}
+
+.action-btn.active {
+    color: #065fd4;
+}
+
+/* Canal/Usuario */
+.video-channel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.channel-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.channel-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #606060;
+    font-size: 1.5rem;
+}
+
+.channel-details h3 {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.channel-details p {
+    font-size: 0.9rem;
+    color: #606060;
+}
+
+.subscribe-btn {
+    padding: 10px 16px;
+    background-color: #cc0000;
+    color: white;
+    border: none;
+    border-radius: 2px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.subscribe-btn:hover {
+    background-color: #a60000;
+}
+
+.subscribe-btn.subscribed {
+    background-color: #606060;
+}
+
+/* Descripción del video */
+.video-description {
+    padding: 15px 0;
+    color: #333;
+    line-height: 1.5;
+    white-space: pre-line;
+}
+
+/* Contenedor del widget de valoración */
+#rating-container {
+    margin-top: 20px;
+    padding: 10px 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Etiqueta */
+#rating-container label {
+    font-weight: bold;
+    color: #333;
+    font-size: 1rem;
+}
+
+/* Select para la valoración */
+#rating-select {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    color: #333;
+    background-color: #fff;
+    transition: border-color 0.2s ease;
+}
+
+#rating-select:focus {
+    border-color: #007BFF;
+    outline: none;
+}
+
+/* Botón de envío */
+#rating-submit {
+    padding: 6px 14px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+#rating-submit:hover {
+    background-color: #0056b3;
+}
+
+
+/* Comentarios */
+.comments-container {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.comments-container h2 {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+#comment-form-container {
+    margin-bottom: 20px;
+}
+
+#comment-form {
+    display: flex;
+    flex-direction: column;
+}
+
+#comment-text {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    resize: vertical;
+    margin-bottom: 10px;
+}
+
+#comment-text:focus {
+    outline: none;
+    border-color: #065fd4;
+}
+
+.comment-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.comment-actions button {
+    padding: 8px 16px;
+    border-radius: 2px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+#btn-cancel-comment {
+    background-color: transparent;
+    color: #606060;
+    border: none;
+}
+
+#btn-submit-comment {
+    background-color: #065fd4;
+    color: white;
+    border: none;
+    font-weight: 500;
+}
+
+#btn-submit-comment:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Lista de comentarios */
+.comment-item {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.comment-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #606060;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.comment-content {
+    flex-grow: 1;
+}
+
+.comment-header {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.comment-author {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #333;
+}
+
+.comment-date {
+    font-size: 0.8rem;
+    color: #606060;
+}
+
+.comment-text {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: #333;
+}
+
+/* Videos relacionados */
+.related-videos {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto 20px auto;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos mejorados para el mensaje "Iniciar sesión para comentar" */
+.login-to-comment {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+    border: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.login-to-comment p {
+    margin: 0;
+    color: #606060;
+    font-size: 1rem;
+}
+
+.login-to-comment .btn-login {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #065fd4;
+    color: white;
+    font-weight: 500;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+    margin-top: 5px;
+}
+
+.login-to-comment .btn-login:hover {
+    background-color: #0356c0;
+}
+
+.video-genre {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.related-videos h2 {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+#related-videos-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.related-video-card {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+.related-video-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.related-thumbnail {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    overflow: hidden;
+}
+
+.related-thumbnail img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.related-video-card:hover .related-thumbnail img {
+    transform: scale(1.05);
+}
+
+.related-info {
+    padding: 10px;
+}
+
+.related-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 5px;
+    line-height: 1.3;
+    height: 2.6rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+}
+
+.related-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #606060;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .video-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .video-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .video-channel {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .subscribe-btn {
+        align-self: flex-start;
+    }
+    
+    #related-videos-container {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+}

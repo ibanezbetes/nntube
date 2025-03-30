@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NTTube - Plataforma de videos</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Cabecera -->
+    <header>
+        <div class="logo-container">
+            <a href="index.html" class="logo">NT<span>Tube</span></a>
+        </div>
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Buscar videos...">
+            <button id="search-button"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="user-container">
+            <a href="html/login.html" class="btn-login">Iniciar Sesión</a>
+            <a href="html/registro.html" class="btn-register">Registrarse</a>
+        </div>
+    </header>
+
+    <!-- Barra lateral de categorías -->
+    <aside class="sidebar">
+        <nav>
+            <ul id="categorias-lista">
+                <li class="categoria-item active" data-id="all">
+                    <i class="fas fa-home"></i> Inicio
+                </li>
+                <!-- Las categorías se cargarán dinámicamente desde JS -->
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Contenido principal -->
+    <main>
+        <section class="videos-container">
+            <h2>Videos populares</h2>
+            <div id="videos-grid">
+                <!-- Los videos se cargarán dinámicamente desde JS -->
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Cargando videos...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Pie de página -->
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 NTTube - Todos los derechos reservados</p>
+            <div class="footer-links">
+                <a href="#">Acerca de</a>
+                <a href="#">Términos de servicio</a>
+                <a href="#">Política de privacidad</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/index.js"></script>
+    <script>
+        // Script para manejar el dropdown
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownBtn = document.querySelector('.dropdown-btn');
+            const dropdownContent = document.querySelector('.dropdown-content');
+            
+            if (dropdownBtn && dropdownContent) {
+                // Alternar la visibilidad al hacer clic
+                dropdownBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdownContent.classList.toggle('show-dropdown');
+                });
+                
+                // Cerrar el dropdown al hacer clic en cualquier otro lugar
+                document.addEventListener('click', function(e) {
+                    if (!e.target.matches('.dropdown-btn') && !dropdownContent.contains(e.target)) {
+                        dropdownContent.classList.remove('show-dropdown');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

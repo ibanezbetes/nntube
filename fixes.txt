@@ -1,0 +1,5 @@
+1)Arreglar el css de inicar sesion para comentar en video.html
+
+2)En video.html, en el apartado de videos recomendados que se muestren los videos que sean del mismo genero/categoria que el video que se esta reproduciendo
+
+3)En index.html que me muestre los videos mas populares en orden en funcion de las visualizaciones que tenga el video
