@@ -1,6 +1,27 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
+const axios = require('axios'); // Asegúrate de tener axios instalado
+
+// Función para enviar notificaciones de actividad de usuario
+async function notifyUserActivity(email, name, action) {
+  try {
+    const response = await axios.post(
+      'https://2n6g1j1sg3.execute-api.eu-north-1.amazonaws.com/default/nttube-user-activity',
+      {
+        email,
+        name,
+        action // "register" o "login"
+      }
+    );
+    console.log('Notificación enviada:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error al enviar notificación:', error);
+    // No interrumpimos el flujo principal si hay un error
+    return null;
+  }
+}
 
 // Obtener todos los usuarios
 router.get('/', async (req, res) => {
@@ -47,6 +68,9 @@ router.post('/', async (req, res) => {
       [nombre_usuario, email, contrasenia]
     );
     
+    // Enviar notificación de registro
+    await notifyUserActivity(email, nombre_usuario, 'register');
+    
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error('Error al crear usuario:', error);
@@ -78,6 +102,9 @@ router.post('/login', async (req, res) => {
     }
     
     const usuario = result.rows[0];
+    
+    // Enviar notificación de inicio de sesión
+    await notifyUserActivity(usuario.email, usuario.nombre_usuario, 'login');
     
     // Enviamos los datos del usuario (sin la contraseña)
     delete usuario.contrasenia;
