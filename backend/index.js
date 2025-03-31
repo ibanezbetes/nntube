@@ -33,7 +33,7 @@ app.use('/api/valoraciones', valoracionesRoutes);
 
 // Ruta de inicio
 app.get('/', (req, res) => {
-  res.redirect('http://127.0.0.1:3001/frontend/index.html');
+  res.send('API de NNTube activa 🚀');
 });
 
 // Iniciar el servidor
