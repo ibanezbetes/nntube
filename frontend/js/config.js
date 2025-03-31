@@ -1,5 +1,5 @@
 // Configuración global para el frontend
-const API_URL = 'http://54.234.108.218:3007/api';
+const API_URL = 'http://nttube-alb-1774771961.us-east-1.elb.amazonaws.com/api';
 
 // Función para extraer miniatura de YouTube a partir de una URL
 function getYouTubeThumbnail(url) {
