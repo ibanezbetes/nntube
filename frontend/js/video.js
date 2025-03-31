@@ -1,3 +1,8 @@
+////////////////////////////////////////////////////////////////////////////////
+// PON AQUÍ LA CONSTANTE `API_URL` CON TU URL DEL BACKEND
+////////////////////////////////////////////////////////////////////////////////
+// const API_URL = "http://localhost:3000"; // <- Ajusta según tu entorno
+
 // Variables globales
 let videoData = null;
 let currentUser = null;
@@ -14,7 +19,7 @@ let player;
 
 // Función para crear el reproductor de YouTube
 function onYouTubeIframeAPIReady() {
-    // La función se ejecutará cuando se cargue la API de YouTube
+    // Se ejecutará cuando se cargue la API de YouTube
     if (videoData && videoData.url_video) {
         createYouTubePlayer(videoData.url_video);
     }
@@ -35,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
     
-    // Configurar eventos generales
+    // Configurar eventos generales (likes, dislikes, share, etc.)
     setupEventListeners();
     
     // Cargar los datos del video (esto iniciará el resto de cargas)
@@ -94,6 +99,9 @@ function checkUserSession() {
 
 // Función para configurar eventos del formulario de comentarios
 function setupCommentFormEvents() {
+    // Si no hay usuario actual, no configurar eventos
+    if (!currentUser) return;
+    
     const commentForm = document.getElementById('comment-form');
     const commentText = document.getElementById('comment-text');
     const submitButton = document.getElementById('btn-submit-comment');
@@ -144,8 +152,6 @@ function setupCommentFormEvents() {
                 throw new Error('Error al enviar el comentario');
             }
             
-            const nuevoComentario = await response.json();
-            
             // Limpiar el formulario
             commentText.value = '';
             
@@ -153,36 +159,16 @@ function setupCommentFormEvents() {
             submitButton.disabled = true;
             submitButton.innerHTML = 'Comentar';
             
-            // Actualizar la lista de comentarios directamente sin recargar
-            const commentsContainer = document.getElementById('comments-list');
+            // Cargar todos los comentarios actualizados
+            loadComments(videoId);
             
-            // Crear el nuevo elemento de comentario
-            const commentElement = document.createElement('div');
-            commentElement.className = 'comment-item';
-            commentElement.innerHTML = `
-                <div class="comment-avatar">
-                    <i class="fas fa-user"></i>
-                </div>
-                <div class="comment-content">
-                    <div class="comment-header">
-                        <span class="comment-author">${currentUser.nombre_usuario}</span>
-                        <span class="comment-date">Ahora mismo</span>
-                    </div>
-                    <p class="comment-text">${texto}</p>
-                </div>
-            `;
-            
-            // Si hay un mensaje de "no hay comentarios", eliminarlo
-            const noComments = commentsContainer.querySelector('.no-comments');
-            if (noComments) {
-                commentsContainer.innerHTML = '';
-            }
-            
-            // Insertar el nuevo comentario al principio de la lista
-            commentsContainer.insertBefore(commentElement, commentsContainer.firstChild);
         } catch (error) {
             console.error('Error:', error);
-            showCustomAlert('No se pudo enviar el comentario', 'error');
+            if (typeof showCustomAlert === 'function') {
+                showCustomAlert('No se pudo enviar el comentario', 'error');
+            } else {
+                showError('No se pudo enviar el comentario');
+            }
             
             // Restaurar el botón en caso de error
             submitButton.disabled = false;
@@ -346,7 +332,7 @@ async function loadVideo(id) {
         // Cargar videos relacionados
         loadRelatedVideos(id);
         
-        // Cargar otros datos
+        // Cargar otros datos (likes, subs, etc.)
         loadLikeStatus();
         loadLikesCount();
         loadSubscriptionStatus();
@@ -416,60 +402,45 @@ function setupRating() {
 }
 
 function updateRatingDisplay(newRating) {
-    // Obtener elementos
     const ratingAvg = document.getElementById('rating-average');
     const ratingCount = document.getElementById('rating-count');
     
     if (ratingAvg && ratingCount) {
-        // Obtener valores actuales
         const currentAvg = parseFloat(ratingAvg.textContent) || 0;
         const currentCountText = ratingCount.textContent || '(0 valoraciones)';
         const currentCount = parseInt(currentCountText.match(/\d+/)[0]) || 0;
         
-        // Verificar si es una valoración nueva o una actualización
         const isNewRating = !document.getElementById('rating-select').getAttribute('data-has-rated');
         
         if (isNewRating) {
-            // Si es una valoración nueva, incrementar el contador
+            // Valoración nueva
             const newCount = currentCount + 1;
-            
-            // Calcular nuevo promedio
             const newAvg = ((currentAvg * currentCount) + newRating) / newCount;
-            
-            // Actualizar la interfaz
             ratingAvg.textContent = newAvg.toFixed(1);
             ratingCount.textContent = `(${newCount} valoracion${newCount !== 1 ? 'es' : ''})`;
-            
-            // Marcar que el usuario ya ha valorado
             document.getElementById('rating-select').setAttribute('data-has-rated', 'true');
         } else {
-            // Si es una actualización, recalcular el promedio
-            const newAvg = ((currentAvg * currentCount) - parseFloat(document.getElementById('rating-select').value) + newRating) / currentCount;
-            
-            // Actualizar solo el promedio
+            // Actualización de la valoración
+            const oldValue = parseFloat(document.getElementById('rating-select').value);
+            const newAvg = ((currentAvg * currentCount) - oldValue + newRating) / currentCount;
             ratingAvg.textContent = newAvg.toFixed(1);
         }
         
-        // Actualizar la selección
         document.getElementById('rating-select').value = newRating;
     }
 }
 
-// Función para cargar datos de valoración (promedio, valoración del usuario)
-// Función modificada para cargar datos de valoración
+// Cargar datos de valoración (promedio, valoración del usuario)
 async function loadRatingData() {
     try {
         // Obtener promedio de valoraciones
         const avgResponse = await fetch(`${API_URL}/valoraciones/video/${videoId}/promedio`);
         if (avgResponse.ok) {
             const avgData = await avgResponse.json();
-            
-            // Actualizar la interfaz con el promedio y total de valoraciones
             const ratingAvg = document.getElementById('rating-average');
             if (ratingAvg) {
                 ratingAvg.textContent = avgData.promedio;
             }
-            
             const ratingCount = document.getElementById('rating-count');
             if (ratingCount) {
                 const count = avgData.total || 0;
@@ -482,12 +453,9 @@ async function loadRatingData() {
             const userResponse = await fetch(`${API_URL}/valoraciones/video/${videoId}/usuario/${currentUser.id_usuario}`);
             if (userResponse.ok) {
                 const userData = await userResponse.json();
-                
-                // Actualizar el selector con la valoración del usuario
                 const ratingSelect = document.getElementById('rating-select');
                 if (ratingSelect && userData.valoracion) {
                     ratingSelect.value = userData.valoracion;
-                    // Marcar que el usuario ya ha valorado
                     ratingSelect.setAttribute('data-has-rated', 'true');
                 }
             }
@@ -496,9 +464,6 @@ async function loadRatingData() {
         console.error('Error al cargar datos de valoración:', error);
     }
 }
-
-
-
 
 // Cargar el estado de suscripción del usuario actual
 async function loadSubscriptionStatus() {
@@ -512,11 +477,9 @@ async function loadSubscriptionStatus() {
     
     try {
         const response = await fetch(`${API_URL}/suscripciones/verificar/${currentUser.id_usuario}/${videoData.id_usuario}`);
-        
         if (!response.ok) {
             throw new Error('Error al verificar suscripción');
         }
-        
         const data = await response.json();
         const subscribeBtn = document.getElementById('btn-subscribe');
         
@@ -535,18 +498,13 @@ async function loadSubscriptionStatus() {
 // Cargar la cantidad de suscriptores
 async function loadSubscriberCount() {
     if (!videoData) return;
-    
     try {
         const response = await fetch(`${API_URL}/suscripciones/cantidad/${videoData.id_usuario}`);
-        
         if (!response.ok) {
             throw new Error('Error al cargar cantidad de suscriptores');
         }
-        
         const data = await response.json();
-        
-        // Actualizar el contador en la interfaz
-        document.getElementById('subscriber-count').textContent = 
+        document.getElementById('subscriber-count').textContent =
             `${data.cantidad} suscriptor${data.cantidad !== 1 ? 'es' : ''}`;
     } catch (error) {
         console.error('Error:', error);
@@ -556,25 +514,19 @@ async function loadSubscriberCount() {
 // Crear una nueva suscripción
 async function createSubscription() {
     if (!currentUser || !videoData) return;
-    
     try {
         const response = await fetch(`${API_URL}/suscripciones`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 id_suscriptor: currentUser.id_usuario,
                 id_suscrito: videoData.id_usuario
             })
         });
-        
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.error || 'Error al suscribirse');
         }
-        
-        // Actualizar el botón
         const subscribeBtn = document.getElementById('btn-subscribe');
         subscribeBtn.classList.add('subscribed');
         subscribeBtn.textContent = 'Suscrito';
@@ -587,18 +539,14 @@ async function createSubscription() {
 // Cancelar una suscripción
 async function cancelSubscription() {
     if (!currentUser || !videoData) return;
-    
     try {
         const response = await fetch(`${API_URL}/suscripciones/${currentUser.id_usuario}/${videoData.id_usuario}`, {
             method: 'DELETE'
         });
-        
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.error || 'Error al cancelar suscripción');
         }
-        
-        // Actualizar el botón
         const subscribeBtn = document.getElementById('btn-subscribe');
         subscribeBtn.classList.remove('subscribed');
         subscribeBtn.textContent = 'Suscribirse';
@@ -630,10 +578,9 @@ function updateVideoUI(video) {
     if (currentUser && video.id_usuario === currentUser.id_usuario) {
         document.getElementById('btn-subscribe').style.display = 'none';
     }
-
-    // Mostrar visualizaciones si tienes un elemento para ello
+    // Mostrar visualizaciones si hay un elemento para ello
     const viewsElement = document.getElementById('video-views');
-    if (viewsElement && video.visitas !== undefined) {
+    if (viewsElement && typeof video.visitas !== 'undefined') {
         viewsElement.textContent = `${video.visitas} visualizaciones`;
     }
 }
@@ -642,10 +589,8 @@ function updateVideoUI(video) {
 function createYouTubePlayer(url) {
     // Extraer el ID del video de YouTube
     const videoId = extractYouTubeId(url);
-    
     if (!videoId) {
         console.error('URL de YouTube no válida:', url);
-        
         // Mostrar mensaje de error en lugar del reproductor
         document.getElementById('player-container').innerHTML = `
             <div class="error-message" style="padding: 2rem; text-align: center; background-color: #f8f8f8;">
@@ -674,44 +619,31 @@ function createYouTubePlayer(url) {
 
     // Registrar visualización
     registerView();
-    
     console.log('Reproductor de YouTube creado con ID:', videoId);
 }
 
-// Función para registrar visualización
+// Registrar visualización
 async function registerView() {
     if (!videoId) return;
-    
     try {
-        // Obtener el identificador de sesión
         const sessionId = generateSessionId();
-        
         const response = await fetch(`${API_URL}/videos/${videoId}/visualizacion`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                session_id: sessionId
-            })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_id: sessionId })
         });
-        
         if (!response.ok) {
             throw new Error('Error al registrar visualización');
         }
-        
         const data = await response.json();
         console.log('Respuesta del servidor:', data);
-        
-        // Actualizar el contador de visualizaciones en la interfaz
         updateViewCount(data.visitas);
-        
     } catch (error) {
         console.error('Error al registrar visualización:', error);
     }
 }
 
-// Función para actualizar el contador de visualizaciones en la interfaz
+// Actualizar el contador de visualizaciones en la interfaz
 function updateViewCount(count) {
     const viewsElement = document.getElementById('video-views');
     if (viewsElement) {
@@ -719,19 +651,14 @@ function updateViewCount(count) {
     }
 }
 
-
 // Extraer el ID del video de YouTube
 function extractYouTubeId(url) {
-    // Patrones comunes de URL de YouTube
     const patterns = [
         /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/,
         /^(https?:\/\/)?(www\.)?youtube\.com\/watch\?v=([^&]+).*/,
         /^(https?:\/\/)?(www\.)?youtu\.be\/([^?]+).*/
     ];
-    
     let videoId = null;
-    
-    // Probar cada patrón
     for (const pattern of patterns) {
         const match = url.match(pattern);
         if (match && (match[2] || match[3])) {
@@ -741,7 +668,6 @@ function extractYouTubeId(url) {
             }
         }
     }
-    
     console.error('No se pudo extraer el ID del video de YouTube de la URL:', url);
     return null;
 }
@@ -752,30 +678,22 @@ let viewRegistered = false;
 
 // Generar un identificador único para la sesión
 function generateSessionId() {
-    // Usar el sessionId existente si está disponible
     let sessionId = localStorage.getItem('nttube_session_id');
-    
-    // Si no existe, crear uno nuevo
     if (!sessionId) {
         sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substring(2, 15);
         localStorage.setItem('nttube_session_id', sessionId);
     }
-    
     return sessionId;
 }
 
-// Modificar el onPlayerReady para registrar la visualización solo al comenzar la reproducción
+// Cuando el reproductor esté listo (este callback lo usa la API de YT)
 function onPlayerReady(event) {
     console.log('Reproductor de YouTube listo');
-    
-    // Añadir evento para controlar el estado del reproductor
     player.addEventListener('onStateChange', function(stateEvent) {
         // Estado 1 = reproduciendo
         if (stateEvent.data === 1 && !videoStarted) {
             videoStarted = true;
             console.log('Video comenzó a reproducirse');
-            
-            // Registrar visualización solo una vez por reproducción
             if (!viewRegistered) {
                 registerView();
                 viewRegistered = true;
@@ -788,14 +706,10 @@ function onPlayerReady(event) {
 async function loadComments(videoId) {
     try {
         const response = await fetch(`${API_URL}/comentarios/video/${videoId}`);
-        
         if (!response.ok) {
             throw new Error('Error al cargar los comentarios');
         }
-        
         const comentarios = await response.json();
-        
-        // Actualizar la interfaz con los comentarios
         displayComments(comentarios);
     } catch (error) {
         console.error('Error:', error);
@@ -808,9 +722,16 @@ async function loadComments(videoId) {
 // Mostrar los comentarios en la interfaz
 function displayComments(comentarios) {
     const commentsContainer = document.getElementById('comments-list');
+    const loadingSpinner = commentsContainer.querySelector('.loading-spinner');
     
-    // Ocultar el spinner de carga
-    commentsContainer.querySelector('.loading-spinner').style.display = 'none';
+    // Limpiar el contenido actual
+    commentsContainer.innerHTML = '';
+    
+    // Ocultar el spinner si existía
+    if (loadingSpinner) {
+        loadingSpinner.style.display = 'none';
+        commentsContainer.appendChild(loadingSpinner);
+    }
     
     if (comentarios.length === 0) {
         commentsContainer.innerHTML = `
@@ -824,8 +745,10 @@ function displayComments(comentarios) {
     // Ordenar comentarios por fecha (más recientes primero)
     comentarios.sort((a, b) => new Date(b.fecha_comentario) - new Date(a.fecha_comentario));
     
-    const commentsHTML = comentarios.map(comment => `
-        <div class="comment-item">
+    comentarios.forEach(comment => {
+        const commentElement = document.createElement('div');
+        commentElement.className = 'comment-item';
+        commentElement.innerHTML = `
             <div class="comment-avatar">
                 <i class="fas fa-user"></i>
             </div>
@@ -836,10 +759,9 @@ function displayComments(comentarios) {
                 </div>
                 <p class="comment-text">${comment.texto}</p>
             </div>
-        </div>
-    `).join('');
-    
-    commentsContainer.innerHTML = commentsHTML;
+        `;
+        commentsContainer.appendChild(commentElement);
+    });
 }
 
 // Cargar videos relacionados por género
@@ -848,7 +770,7 @@ async function loadRelatedVideos(currentVideoId) {
         // Asegurarnos de que tenemos los datos del video actual
         if (!videoData || !videoData.id_genero) {
             console.log('Esperando datos del video actual para cargar videos relacionados');
-            // Si aún no tenemos los datos del video, esperar 500ms y volver a intentar
+            // Si aún no tenemos los datos del video, esperar un poco y reintentar
             setTimeout(() => loadRelatedVideos(currentVideoId), 500);
             return;
         }
@@ -857,7 +779,6 @@ async function loadRelatedVideos(currentVideoId) {
         
         // Cargar videos del mismo género
         const response = await fetch(`${API_URL}/videos/genero/${videoData.id_genero}`);
-        
         if (!response.ok) {
             throw new Error('Error al cargar videos del mismo género');
         }
@@ -873,30 +794,26 @@ async function loadRelatedVideos(currentVideoId) {
             
             // Si no hay suficientes videos del mismo género, cargar algunos videos populares
             const popularResponse = await fetch(`${API_URL}/videos`);
-            
             if (popularResponse.ok) {
                 const videosPopulares = await popularResponse.json();
                 
-                // Filtrar videos que ya están incluidos y el video actual
-                const videosAdicionalesPopulares = videosPopulares.filter(video => 
-                    video.id_video != currentVideoId && 
+                // Filtrar videos que ya estén incluidos y excluir el actual
+                const videosAdicionalesPopulares = videosPopulares.filter(video =>
+                    video.id_video != currentVideoId &&
                     !videosDelMismoGenero.some(v => v.id_video == video.id_video)
                 );
                 
                 // Unir los videos del mismo género con algunos videos populares
                 videosDelMismoGenero = [
                     ...videosDelMismoGenero,
-                    ...videosAdicionalesPopulares.slice(0, 6) // Limitar a 6 videos adicionales como máximo
+                    ...videosAdicionalesPopulares.slice(0, 6) // Limitar a 6 videos adicionales
                 ];
             }
         }
         
         // Limitar a 6 videos en total
         const videosRelacionados = videosDelMismoGenero.slice(0, 6);
-        
         console.log(`Se encontraron ${videosRelacionados.length} videos relacionados`);
-        
-        // Mostrar los videos relacionados
         displayRelatedVideos(videosRelacionados);
     } catch (error) {
         console.error('Error al cargar videos relacionados:', error);
@@ -906,16 +823,13 @@ async function loadRelatedVideos(currentVideoId) {
     }
 }
 
-// Mostrar los videos relacionados en la interfaz (función mejorada)
+// Mostrar los videos relacionados en la interfaz
 function displayRelatedVideos(videos) {
     const container = document.getElementById('related-videos-container');
-    
-    // Asegurarnos de que el contenedor existe
     if (!container) {
         console.error('Contenedor de videos relacionados no encontrado');
         return;
     }
-    
     // Ocultar el spinner de carga si existe
     const loadingSpinner = container.querySelector('.loading-spinner');
     if (loadingSpinner) {
@@ -960,101 +874,6 @@ function displayRelatedVideos(videos) {
 
 // Configurar los event listeners
 function setupEventListeners() {
-    // Eventos para el formulario de comentarios (si el usuario está logueado)
-    if (currentUser) {
-        const commentForm = document.getElementById('comment-form');
-        const commentText = document.getElementById('comment-text');
-        const submitButton = document.getElementById('btn-submit-comment');
-        const cancelButton = document.getElementById('btn-cancel-comment');
-        
-        // Habilitar/deshabilitar el botón de comentar según haya texto
-        commentText.addEventListener('input', () => {
-            submitButton.disabled = commentText.value.trim() === '';
-        });
-        
-        // Botón de cancelar
-        cancelButton.addEventListener('click', () => {
-            commentText.value = '';
-            submitButton.disabled = true;
-        });
-        
-        // Enviar comentario
-        commentForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            
-            const texto = commentText.value.trim();
-            
-            if (!texto) return;
-            
-            try {
-                // Mostrar un indicador de carga
-                submitButton.disabled = true;
-                submitButton.textContent = 'Enviando...';
-                
-                const response = await fetch(`${API_URL}/comentarios`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        id_video: videoId,
-                        id_usuario: currentUser.id_usuario,
-                        texto: texto
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Error al enviar el comentario');
-                }
-                
-                const nuevoComentario = await response.json();
-                
-                // Limpiar el formulario
-                commentText.value = '';
-                
-                // Restaurar el botón
-                submitButton.disabled = true;
-                submitButton.textContent = 'Comentar';
-                
-                // Actualizar la lista de comentarios directamente sin recargar
-                const commentsContainer = document.getElementById('comments-list');
-                
-                // Crear el nuevo elemento de comentario
-                const commentElement = document.createElement('div');
-                commentElement.className = 'comment-item';
-                commentElement.innerHTML = `
-                    <div class="comment-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="comment-content">
-                        <div class="comment-header">
-                            <span class="comment-author">${currentUser.nombre_usuario}</span>
-                            <span class="comment-date">Ahora mismo</span>
-                        </div>
-                        <p class="comment-text">${texto}</p>
-                    </div>
-                `;
-                
-                // Si hay un mensaje de "no hay comentarios", eliminarlo
-                const noComments = commentsContainer.querySelector('.no-comments');
-                if (noComments) {
-                    commentsContainer.innerHTML = '';
-                }
-                
-                // Insertar el nuevo comentario al principio de la lista
-                commentsContainer.insertBefore(commentElement, commentsContainer.firstChild);
-            } catch (error) {
-                console.error('Error:', error);
-                showError('No se pudo enviar el comentario');
-                
-                // Restaurar el botón en caso de error
-                submitButton.disabled = false;
-                submitButton.textContent = 'Comentar';
-            }
-        });
-    }
-    
-    // Botones de like/dislike con funcionalidad actualizada
     const likeButton = document.getElementById('btn-like');
     const dislikeButton = document.getElementById('btn-dislike');
     
@@ -1063,19 +882,16 @@ function setupEventListeners() {
             showError('Inicia sesión para dar like');
             return;
         }
-        
         // Si el botón ya está activo, quitamos el like
         if (likeButton.classList.contains('active')) {
             await removeLikeDislike();
         } else {
-            // Si no, añadimos el like y quitamos el dislike si lo hubiera
+            // Añadimos el like y quitamos el dislike si lo hubiera
             await addLikeDislike(true);
             if (dislikeButton.classList.contains('active')) {
                 dislikeButton.classList.remove('active');
             }
         }
-        
-        // Actualizamos el contador de likes
         loadLikesCount();
     });
     
@@ -1084,47 +900,35 @@ function setupEventListeners() {
             showError('Inicia sesión para dar dislike');
             return;
         }
-        
         // Si el botón ya está activo, quitamos el dislike
         if (dislikeButton.classList.contains('active')) {
             await removeLikeDislike();
         } else {
-            // Si no, añadimos el dislike y quitamos el like si lo hubiera
+            // Añadimos el dislike y quitamos el like si lo hubiera
             await addLikeDislike(false);
             if (likeButton.classList.contains('active')) {
                 likeButton.classList.remove('active');
             }
         }
-        
-        // Actualizamos el contador de dislikes
         loadLikesCount();
     });
 
-    // Botón de suscribirse con funcionalidad actualizada
     const subscribeBtn = document.getElementById('btn-subscribe');
-    
     subscribeBtn.addEventListener('click', async () => {
         if (!currentUser) {
             showError('Inicia sesión para suscribirte');
             return;
         }
-        
-        // No permitir suscribirse a sí mismo
         if (currentUser.id_usuario === videoData.id_usuario) {
             showError('No puedes suscribirte a ti mismo');
             return;
         }
-        
         try {
             if (subscribeBtn.classList.contains('subscribed')) {
-                // Cancelar suscripción
                 await cancelSubscription();
             } else {
-                // Crear suscripción
                 await createSubscription();
             }
-            
-            // Actualizar contador de suscriptores
             loadSubscriberCount();
         } catch (error) {
             console.error('Error:', error);
@@ -1132,116 +936,51 @@ function setupEventListeners() {
         }
     });
     
-// Botón de compartir
-document.getElementById('btn-share').addEventListener('click', () => {
-    // Copiar la URL al portapapeles
-    const videoUrl = window.location.href;
-    
-    navigator.clipboard.writeText(videoUrl)
-        .then(() => {
-            // Reemplazamos alert por nuestro toast personalizado
-            showToast('URL copiada al portapapeles');
-        })
-        .catch(err => {
-            console.error('Error al copiar URL:', err);
-            // Fallback para navegadores que no soportan clipboard API
-            prompt('Copia esta URL para compartir el video:', videoUrl);
-        });
-});
-
-// Función para crear y mostrar un toast
-function showToast(message) {
-    const toastContainer = document.getElementById('toast-container');
-
-    // Crear el elemento para el mensaje
-    const toast = document.createElement('div');
-    toast.className = 'toast-message';
-    toast.textContent = message;
-
-    // Agregarlo al contenedor
-    toastContainer.appendChild(toast);
-
-    // Eliminarlo tras 3 segundos
-    setTimeout(() => {
-        toast.remove();
-    }, 3000);
-}
-
-
-    
-    // Botón de suscribirse
-    document.getElementById('btn-subscribe').addEventListener('click', () => {
-        if (!currentUser) {
-            showError('Inicia sesión para suscribirte');
-            return;
-        }
-        
-        const button = document.getElementById('btn-subscribe');
-        
-        if (button.classList.contains('subscribed')) {
-            button.classList.remove('subscribed');
-            button.textContent = 'Suscribirse';
-        } else {
-            button.classList.add('subscribed');
-            button.textContent = 'Suscrito';
-        }
-        
-        // Aquí iría la lógica para gestionar la suscripción (en un sistema real)
+    // Botón de compartir
+    document.getElementById('btn-share').addEventListener('click', () => {
+        const videoUrl = window.location.href;
+        navigator.clipboard.writeText(videoUrl)
+            .then(() => {
+                showToast('URL copiada al portapapeles');
+            })
+            .catch(err => {
+                console.error('Error al copiar URL:', err);
+                prompt('Copia esta URL para compartir el video:', videoUrl);
+            });
     });
-    
-    /* Configurar evento de búsqueda
-    const searchInput = document.getElementById('search-input');
-    const searchButton = document.getElementById('search-button');
-    
-    searchButton.addEventListener('click', () => {
-        performSearch(searchInput.value);
-    });
-    
-    searchInput.addEventListener('keyup', (event) => {
-        if (event.key === 'Enter') {
-            performSearch(searchInput.value);
-        }
-    });*/
-}
 
-// Realizar búsqueda
-function performSearch(query) {
-    if (query.trim()) {
-        window.location.href = `../index.html?buscar=${encodeURIComponent(query)}`;
+    // Función para crear y mostrar un toast
+    function showToast(message) {
+        const toastContainer = document.getElementById('toast-container');
+        if (!toastContainer) return; // Asegúrate de tener un div con id="toast-container" en tu HTML
+
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
     }
 }
-
-// Alternar estado de botón (para likes/dislikes)
-function toggleButton(button) {
-    if (button.classList.contains('active')) {
-        button.classList.remove('active');
-    } else {
-        button.classList.add('active');
-    }
-}
-
 
 // Cargar el estado de like/dislike del usuario actual
 async function loadLikeStatus() {
     if (!currentUser || !videoId) return;
-    
     try {
         const response = await fetch(`${API_URL}/likes/video/${videoId}/usuario/${currentUser.id_usuario}`);
-        
         if (!response.ok) {
             throw new Error('Error al cargar estado de like');
         }
-        
         const data = await response.json();
         
         const likeButton = document.getElementById('btn-like');
         const dislikeButton = document.getElementById('btn-dislike');
         
-        // Resetear estado de los botones
         likeButton.classList.remove('active');
         dislikeButton.classList.remove('active');
         
-        // Actualizar según el estado
         if (data.like === true) {
             likeButton.classList.add('active');
         } else if (data.like === false) {
@@ -1255,17 +994,12 @@ async function loadLikeStatus() {
 // Cargar la cantidad de likes y dislikes
 async function loadLikesCount() {
     if (!videoId) return;
-    
     try {
         const response = await fetch(`${API_URL}/likes/video/${videoId}/count`);
-        
         if (!response.ok) {
             throw new Error('Error al cargar conteo de likes');
         }
-        
         const data = await response.json();
-        
-        // Actualizar los contadores en la interfaz
         document.getElementById('like-count').textContent = data.likes;
         document.getElementById('dislike-count').textContent = data.dislikes;
     } catch (error) {
@@ -1276,29 +1010,22 @@ async function loadLikesCount() {
 // Añadir like o dislike
 async function addLikeDislike(isLike) {
     if (!currentUser || !videoId) return;
-    
     try {
         const response = await fetch(`${API_URL}/likes`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 id_usuario: currentUser.id_usuario,
                 id_video: videoId,
                 tipo: isLike
             })
         });
-        
         if (!response.ok) {
             throw new Error('Error al dar like/dislike');
         }
-        
-        // Actualizar el estado del botón
-        const button = isLike ? 
-            document.getElementById('btn-like') : 
-            document.getElementById('btn-dislike');
-        
+        const button = isLike
+            ? document.getElementById('btn-like')
+            : document.getElementById('btn-dislike');
         button.classList.add('active');
     } catch (error) {
         console.error('Error:', error);
@@ -1309,17 +1036,13 @@ async function addLikeDislike(isLike) {
 // Eliminar like o dislike
 async function removeLikeDislike() {
     if (!currentUser || !videoId) return;
-    
     try {
         const response = await fetch(`${API_URL}/likes/video/${videoId}/usuario/${currentUser.id_usuario}`, {
             method: 'DELETE'
         });
-        
         if (!response.ok) {
             throw new Error('Error al quitar like/dislike');
         }
-        
-        // Actualizar el estado de los botones
         document.getElementById('btn-like').classList.remove('active');
         document.getElementById('btn-dislike').classList.remove('active');
     } catch (error) {
@@ -1331,11 +1054,7 @@ async function removeLikeDislike() {
 // Cerrar sesión
 function handleLogout(event) {
     event.preventDefault();
-    
-    // Eliminar datos del usuario de localStorage
     localStorage.removeItem('usuario');
-    
-    // Redireccionar al inicio
     window.location.href = '../index.html';
 }
 
@@ -1344,56 +1063,39 @@ function showError(message) {
     alert(message);
 }
 
-// Función personalizada para mostrar alertas mejoradas
+// Función personalizada para mostrar alertas
 function showCustomAlert(message, type = 'info') {
-    // Crear el contenedor principal si no existe
     let alertContainer = document.getElementById('custom-alert-container');
     if (!alertContainer) {
         alertContainer = document.createElement('div');
         alertContainer.id = 'custom-alert-container';
         document.body.appendChild(alertContainer);
     }
-    
-    // Crear la alerta
     const alert = document.createElement('div');
     alert.className = `custom-alert ${type}`;
-    
-    // Icono según el tipo
     let icon = '';
-    if (type === 'success') {
-        icon = '✓';
-    } else if (type === 'error') {
-        icon = '✕';
-    } else {
-        icon = 'ℹ';
-    }
-    
-    // Contenido de la alerta
+    if (type === 'success') icon = '✓';
+    else if (type === 'error') icon = '✕';
+    else icon = 'ℹ';
     alert.innerHTML = `
         <div class="alert-icon">${icon}</div>
         <div class="alert-message">${message}</div>
         <button class="alert-close">×</button>
     `;
-    
-    // Añadir al contenedor
     alertContainer.appendChild(alert);
-    
-    // Configurar evento para cerrar
     const closeBtn = alert.querySelector('.alert-close');
     closeBtn.addEventListener('click', () => {
         alertContainer.removeChild(alert);
     });
-    
-    // Automáticamente cerrar después de 3 segundos
     setTimeout(() => {
         if (alertContainer.contains(alert)) {
             alertContainer.removeChild(alert);
         }
     }, 3000);
-    
     return alert;
 }
 
+// Estilos para las alertas y la sección de valoración
 const ratingStyles = document.createElement('style');
 ratingStyles.textContent = `
     .login-message {
@@ -1414,7 +1116,6 @@ ratingStyles.textContent = `
 `;
 document.head.appendChild(ratingStyles);
 
-// Añadir estilos para las alertas
 const alertStyles = document.createElement('style');
 alertStyles.textContent = `
     #custom-alert-container {
@@ -1423,7 +1124,6 @@ alertStyles.textContent = `
         right: 20px;
         z-index: 9999;
     }
-    
     .custom-alert {
         display: flex;
         align-items: center;
@@ -1436,19 +1136,15 @@ alertStyles.textContent = `
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         animation: slideIn 0.3s ease;
     }
-    
     .custom-alert.success {
         border-left: 4px solid #4caf50;
     }
-    
     .custom-alert.error {
         border-left: 4px solid #f44336;
     }
-    
     .custom-alert.info {
         border-left: 4px solid #2196f3;
     }
-    
     .alert-icon {
         font-size: 1.5rem;
         margin-right: 15px;
@@ -1458,25 +1154,20 @@ alertStyles.textContent = `
         width: 24px;
         height: 24px;
     }
-    
     .custom-alert.success .alert-icon {
         color: #4caf50;
     }
-    
     .custom-alert.error .alert-icon {
         color: #f44336;
     }
-    
     .custom-alert.info .alert-icon {
         color: #2196f3;
     }
-    
     .alert-message {
         flex-grow: 1;
         font-size: 0.95rem;
         color: #333;
     }
-    
     .alert-close {
         background: none;
         border: none;
@@ -1486,11 +1177,9 @@ alertStyles.textContent = `
         padding: 0;
         margin-left: 10px;
     }
-    
     .alert-close:hover {
         color: #333;
     }
-    
     @keyframes slideIn {
         from {
             transform: translateX(100%);
@@ -1503,3 +1192,19 @@ alertStyles.textContent = `
     }
 `;
 document.head.appendChild(alertStyles);
+
+// Obtener el thumbnail de YouTube
+function getYouTubeThumbnail(url) {
+    const vid = extractYouTubeId(url);
+    if (vid) {
+        return `https://img.youtube.com/vi/${vid}/hqdefault.jpg`;
+    }
+    return '';
+}
+
+// Formatear fecha
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '';
+    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+}

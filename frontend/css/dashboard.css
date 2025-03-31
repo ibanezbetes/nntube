@@ -1,4 +1,4 @@
-/* Estilos para el dashboard */
+/* Estilos para el dashboard - Tema Oscuro */
 
 /* Dropdown para el usuario */
 .user-dropdown {
@@ -7,48 +7,70 @@
 }
 
 .dropdown-btn {
-    padding: 0.5rem 1rem;
-    background-color: #065fd4;
+    padding: 0.6rem 1.2rem;
+    background-color: var(--secondary-color);
     color: white;
     border: none;
-    border-radius: 3px;
+    border-radius: 24px;
     cursor: pointer;
     font-weight: 500;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
+    transition: all var(--transition-fast) ease;
+    box-shadow: 0 2px 5px rgba(76, 139, 245, 0.3);
+}
+
+.dropdown-btn:hover {
+    background-color: #3a7ae0;
+    box-shadow: 0 4px 8px rgba(76, 139, 245, 0.4);
+    transform: translateY(-2px);
 }
 
 .dropdown-content {
     display: none;
     position: absolute;
     right: 0;
-    min-width: 200px;
-    background-color: white;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
+    min-width: 220px;
+    background-color: var(--background-lighter);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
     z-index: 1000;
-    margin-top: 5px;
+    margin-top: 10px;
+    animation: fadeIn var(--transition-fast) ease;
+    transform-origin: top right;
+    overflow: hidden;
 }
 
 .dropdown-content a {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.8rem 1rem;
-    color: #333;
+    gap: 0.8rem;
+    padding: 1rem 1.2rem;
+    color: var(--text-color);
     text-decoration: none;
-    transition: background-color 0.2s;
+    transition: all var(--transition-fast) ease;
+}
+
+.dropdown-content a i {
+    color: var(--text-light);
+    transition: color var(--transition-fast) ease;
 }
 
 .dropdown-content a:hover {
-    background-color: #f2f2f2;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dropdown-content a:hover i {
+    color: var(--accent-color);
 }
 
 .dropdown-btn:focus + .dropdown-content,
-.dropdown-content:hover {
+.dropdown-content:hover,
+.show-dropdown {
     display: block;
+    animation: fadeIn 0.2s ease;
 }
 
 .user-dropdown:hover .dropdown-content {
@@ -58,33 +80,43 @@
 /* Separador en la barra lateral */
 .separator {
     height: 1px;
-    background-color: #eee;
-    margin: 0.8rem 0;
+    background-color: var(--border-color);
+    margin: 0.8rem 1rem;
 }
 
 .sidebar .categoria-item a {
     display: flex;
     align-items: center;
     gap: 1rem;
-    color: #606060;
+    color: var(--text-light);
     text-decoration: none;
     width: 100%;
+    transition: color var(--transition-fast) ease;
+}
+
+.sidebar .categoria-item:hover a,
+.sidebar .categoria-item.active a {
+    color: var(--accent-color);
 }
 
 /* Secciones del dashboard */
 .dashboard-header {
     margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: var(--background-lighter);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px var(--shadow-color);
 }
 
 .dashboard-header h1 {
     font-size: 2rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
-    color: #333;
+    color: var(--text-accent);
 }
 
 .dashboard-header p {
-    color: #606060;
+    color: var(--text-light);
     font-size: 1.1rem;
 }
 
@@ -101,27 +133,34 @@
     align-items: center;
     gap: 1.5rem;
     padding: 1.5rem;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: var(--background-lighter);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px var(--shadow-color);
+    transition: transform var(--transition-medium) ease, 
+                box-shadow var(--transition-medium) ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px var(--shadow-color);
 }
 
 .stat-card i {
     font-size: 2.5rem;
-    color: #065fd4;
+    color: var(--secondary-color);
 }
 
 .stat-info h3 {
     font-size: 1.1rem;
     font-weight: 500;
     margin-bottom: 0.5rem;
-    color: #606060;
+    color: var(--text-light);
 }
 
 .stat-info p {
     font-size: 2rem;
     font-weight: 600;
-    color: #333;
+    color: var(--text-accent);
 }
 
 /* Acciones rápidas */
@@ -133,12 +172,25 @@
     font-size: 1.5rem;
     font-weight: 500;
     margin-bottom: 1rem;
-    color: #333;
+    color: var(--text-accent);
+    position: relative;
+}
+
+.dashboard-actions h2::after,
+.recent-videos h2::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background-color: var(--primary-color);
 }
 
 .action-buttons {
     display: flex;
     gap: 1.5rem;
+    margin-top: 1.5rem;
 }
 
 .action-btn {
@@ -148,22 +200,28 @@
     align-items: center;
     gap: 1rem;
     padding: 2rem;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: var(--background-lighter);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px var(--shadow-color);
     text-decoration: none;
-    color: #333;
-    transition: transform 0.2s, box-shadow 0.2s;
+    color: var(--text-color);
+    transition: transform var(--transition-medium) ease, 
+                box-shadow var(--transition-medium) ease;
 }
 
 .action-btn:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    transform: translateY(-7px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
 .action-btn i {
     font-size: 2.5rem;
-    color: #065fd4;
+    color: var(--secondary-color);
+    transition: color var(--transition-fast) ease;
+}
+
+.action-btn:hover i {
+    color: var(--accent-color);
 }
 
 .action-btn span {
@@ -179,8 +237,9 @@
 .recent-videos h2 {
     font-size: 1.5rem;
     font-weight: 500;
-    margin-bottom: 1rem;
-    color: #333;
+    margin-bottom: 1.5rem;
+    color: var(--text-accent);
+    position: relative;
 }
 
 /* Ajustar el tamaño del grid de videos en el dashboard */
@@ -191,71 +250,124 @@
     margin-top: 1.5rem;
 }
 
-/* Limitar la altura de las tarjetas para que sean más compactas */
+/* Estilo para las tarjetas de video */
 #user-videos-grid .video-card {
     max-height: 280px;
-    background-color: white;
-    border-radius: 10px;
+    background-color: var(--background-lighter);
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s;
+    box-shadow: 0 4px 15px var(--shadow-color);
+    transition: transform var(--transition-medium) ease, 
+                box-shadow var(--transition-medium) ease;
+}
+
+#user-videos-grid .video-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
 }
 
 #user-videos-grid .video-thumbnail {
     height: 140px; /* Altura fija para las miniaturas */
+    position: relative;
+    overflow: hidden;
 }
 
 #user-videos-grid .video-thumbnail img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform var(--transition-medium) ease;
+}
+
+#user-videos-grid .video-card:hover .video-thumbnail img {
+    transform: scale(1.05);
 }
 
 #user-videos-grid .video-info {
-    padding: 0.8rem;
+    padding: 1rem;
 }
 
 #user-videos-grid .video-title {
-    font-size: 0.95rem;
-    max-height: 3.8rem; /* Limitar a 2 líneas */
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    max-height: 3.8rem;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    color: var(--text-accent);
+    transition: color var(--transition-fast) ease;
+}
+
+#user-videos-grid .video-card:hover .video-title {
+    color: var(--accent-color);
 }
 
 #user-videos-grid .video-meta {
+    display: flex;
+    justify-content: space-between;
     font-size: 0.8rem;
+    color: var(--text-light);
     margin-top: 0.5rem;
+}
+
+/* Spinner de carga */
+.loading-spinner {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 0;
+    color: var(--text-light);
+}
+
+.spinner-animation {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top: 3px solid var(--accent-color);
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    animation: rotateSpinner 1s linear infinite;
+}
+
+@keyframes rotateSpinner {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 /* Estado vacío */
 .no-videos {
     text-align: center;
     padding: 2rem;
-    background-color: #f9f9f9;
-    border-radius: 10px;
+    background-color: var(--background-lighter);
+    border-radius: 12px;
     margin-top: 1rem;
+    box-shadow: 0 4px 15px var(--shadow-color);
 }
 
 .no-videos p {
-    margin-bottom: 1rem;
-    color: #666;
+    margin-bottom: 1.5rem;
+    color: var(--text-light);
+    font-size: 1.1rem;
 }
 
 .btn-primary {
     display: inline-block;
-    padding: 0.7rem 1.2rem;
-    background-color: #065fd4;
+    padding: 0.8rem 1.5rem;
+    background-color: var(--secondary-color);
     color: white;
     text-decoration: none;
-    border-radius: 4px;
+    border-radius: 24px;
     font-weight: 500;
-    transition: background-color 0.2s;
+    transition: all var(--transition-fast) ease;
+    box-shadow: 0 2px 5px rgba(76, 139, 245, 0.3);
 }
 
 .btn-primary:hover {
-    background-color: #0356c0;
+    background-color: #3a7ae0;
+    box-shadow: 0 4px 8px rgba(76, 139, 245, 0.4);
+    transform: translateY(-2px);
 }
 
 /* Responsive design */
@@ -263,10 +375,48 @@
     .dashboard-stats,
     .action-buttons {
         flex-direction: column;
+        gap: 1rem;
     }
     
     .stat-card,
     .action-btn {
         width: 100%;
+    }
+
+    .dashboard-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .stat-info p {
+        font-size: 1.5rem;
+    }
+
+    .action-btn {
+        padding: 1.5rem;
+    }
+
+    #user-videos-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    main {
+        padding: 1rem;
+    }
+
+    .dashboard-header,
+    .stat-card,
+    .action-btn {
+        padding: 1rem;
+    }
+
+    .dashboard-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .dashboard-header p,
+    .action-btn span {
+        font-size: 0.9rem;
     }
 }

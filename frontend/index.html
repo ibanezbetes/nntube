@@ -7,12 +7,18 @@
     <link rel="stylesheet" href="css/styles.css">
     <!-- Font Awesome para iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- AOS - Animate On Scroll -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <!-- Locomotive Scroll para efectos de scroll suaves -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.css">
 </head>
 <body>
     <!-- Cabecera -->
     <header>
         <div class="logo-container">
-            <a href="index.html" class="logo">NT<span>Tube</span></a>
+            <a href="index.html" class="logo">
+                <img src="https://i.ibb.co/dqf9Xqj/NTTube.png" alt="NTTube Logo" class="logo-img">
+            </a>
         </div>
         <div class="search-container">
             <input type="text" id="search-input" placeholder="Buscar videos...">
@@ -28,24 +34,42 @@
     <aside class="sidebar">
         <nav>
             <ul id="categorias-lista">
-                <li class="categoria-item active" data-id="all">
-                    <i class="fas fa-home"></i> Inicio
-                </li>
-                <!-- Las categorías se cargarán dinámicamente desde JS -->
+                
             </ul>
         </nav>
     </aside>
 
     <!-- Contenido principal -->
     <main>
-        <section class="videos-container">
-            <h2>Videos populares</h2>
+        <section class="hero-section" data-aos="fade-up">
+            <div class="hero-content">
+                <h1>NTTube</h1>
+                <p>La mejor plataforma para compartir y ver el contenido de NTT Data</p>
+            </div>
+        </section>
+
+        <section class="videos-container" data-aos="fade-up" data-aos-delay="200">
+            <div class="section-header">
+                <h2>Videos populares</h2>
+                <div class="filter-options">
+                    <button class="filter-btn active">Todos</button>
+                    <button class="filter-btn">Recientes</button>
+                    <button class="filter-btn">Más vistos</button>
+                </div>
+            </div>
             <div id="videos-grid">
                 <!-- Los videos se cargarán dinámicamente desde JS -->
                 <div class="loading-spinner">
-                    <i class="fas fa-spinner fa-spin"></i>
+                    <div class="spinner-animation"></div>
                     <p>Cargando videos...</p>
                 </div>
+            </div>
+        </section>
+
+        <section class="featured-creators" data-aos="fade-up" data-aos-delay="300">
+            <h2>Creadores destacados</h2>
+            <div class="creators-grid">
+                <!-- Creadores destacados se cargarán dinámicamente -->
             </div>
         </section>
     </main>
@@ -53,19 +77,90 @@
     <!-- Pie de página -->
     <footer>
         <div class="footer-content">
-            <p>&copy; 2025 NTTube - Todos los derechos reservados</p>
-            <div class="footer-links">
-                <a href="#">Acerca de</a>
-                <a href="#">Términos de servicio</a>
-                <a href="#">Política de privacidad</a>
+            <div class="footer-logo">
+                <a href="index.html" class="logo">NT<span>Tube</span></a>
+                <p>Tu plataforma de videos favorita</p>
             </div>
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h3>Navegación</h3>
+                    <a href="#">Inicio</a>
+                    <a href="#">Tendencias</a>
+                    <a href="#">Explorar</a>
+                </div>
+                <div class="footer-column">
+                    <h3>Legal</h3>
+                    <a href="#">Términos de servicio</a>
+                    <a href="#">Política de privacidad</a>
+                    <a href="#">Cookies</a>
+                </div>
+                <div class="footer-column">
+                    <h3>Contacto</h3>
+                    <a href="#">Soporte</a>
+                    <a href="#">Contacto</a>
+                    <a href="#">Acerca de</a>
+                </div>
+            </div>
+            <div class="social-media">
+                <a href="#" class="social-icon"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 NTTube - Todos los derechos reservados</p>
         </div>
     </footer>
 
     <!-- Scripts -->
     <script src="js/config.js"></script>
     <script src="js/index.js"></script>
+    <!-- AOS - Animate On Scroll -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <!-- Locomotive Scroll -->
+    <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.js"></script>
+    <!-- GSAP para animaciones avanzadas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    
     <script>
+        // Inicializar AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-out',
+            once: true // Cambiado a true para evitar repeticiones
+        });
+
+        // Quitar la inicialización de Locomotive Scroll que está causando problemas
+        
+        // Efecto de scroll simple para la cabecera
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.classList.add('header-scrolled');
+            } else {
+                header.classList.remove('header-scrolled');
+            }
+        });
+
+        // Animación para los elementos de la sección hero (sin animar el header)
+        gsap.from('.hero-content h1', {
+            y: 50,
+            opacity: 0,
+            duration: 0.8,
+            delay: 0.5,
+            ease: 'power3.out'
+        });
+
+        gsap.from('.hero-content p', {
+            y: 30,
+            opacity: 0,
+            duration: 0.8,
+            delay: 0.7,
+            ease: 'power3.out'
+        });
+
         // Script para manejar el dropdown
         document.addEventListener('DOMContentLoaded', function() {
             const dropdownBtn = document.querySelector('.dropdown-btn');
@@ -86,6 +181,15 @@
                     }
                 });
             }
+
+            // Animación de los botones de filtro
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
         });
     </script>
 </body>
