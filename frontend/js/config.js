@@ -1,5 +1,5 @@
 // Configuración global para el frontend
-const API_URL = 'http://localhost:3007/api';
+const API_URL = 'http://54.234.108.218:3007/api';
 
 // Función para extraer miniatura de YouTube a partir de una URL
 function getYouTubeThumbnail(url) {
